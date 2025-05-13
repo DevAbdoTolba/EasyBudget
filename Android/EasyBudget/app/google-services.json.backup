@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "68665651617",
+    "project_id": "tolba-easy-budget",
+    "storage_bucket": "tolba-easy-budget.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68665651617:android:a83816210c9a6451401be0",
+        "android_client_info": {
+          "package_name": "com.benoitletondor.easybudgetapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "68665651617-8vklig3p1eelshh0kofgf0a7achaugml.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.benoitletondor.easybudgetapp",
+            "certificate_hash": "f8e90fde437ac78cbf89f0fa89dd1fbb267133a5"
+          }
+        },
+        {
+          "client_id": "68665651617-lg1tcvhct337ba4t728nv9g4v9esd5nr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDppwdGtM4TIYF-U_d30jC1hxJf_4QwcYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "68665651617-lg1tcvhct337ba4t728nv9g4v9esd5nr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

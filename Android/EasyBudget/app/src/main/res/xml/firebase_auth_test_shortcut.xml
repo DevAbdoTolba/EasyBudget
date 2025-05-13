@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- A shortcut that launches the Firebase Auth Test Activity -->
+    <shortcut
+        android:shortcutId="firebase_auth_test"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_add_24"
+        android:shortcutShortLabel="@string/firebase_auth_test_short"
+        android:shortcutLongLabel="@string/firebase_auth_test_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.benoitletondor.easybudgetapp"
+            android:targetClass="com.benoitletondor.easybudgetapp.test.FirebaseAuthTestActivity" />
+    </shortcut>
+</shortcuts>

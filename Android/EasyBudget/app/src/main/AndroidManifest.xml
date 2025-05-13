@@ -112,15 +112,24 @@
             <intent-filter android:priority="999">
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
-
-        <receiver
+        </service>        <receiver
             android:name=".notif.AppUpdateBroadcastReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+
+        <!-- Firebase Authentication Test Activity -->
+        <activity
+            android:name=".test.FirebaseAuthTestActivity"
+            android:label="Firebase Auth Test"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

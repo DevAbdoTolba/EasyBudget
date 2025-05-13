@@ -50,9 +50,21 @@
 
             <extra
                 android:name="intent.addexpense.show"
-                android:value="true" />
+                android:value="true" />        </intent>
 
-        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+      <shortcut
+        android:shortcutId="firebase_auth_test"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_manage_accounts_24"
+        android:shortcutShortLabel="@string/firebase_auth_test_short"
+        android:shortcutLongLabel="@string/firebase_auth_test_long"
+        android:shortcutDisabledMessage="@string/firebase_auth_test_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.benoitletondor.easybudgetapp"
+            android:targetClass="com.benoitletondor.easybudgetapp.test.FirebaseAuthTestActivity" />
 
         <categories android:name="android.shortcut.conversation" />
     </shortcut>

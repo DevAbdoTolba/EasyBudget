@@ -507,10 +507,14 @@
     <string name="update_three_dot_two_notification_cta">Discover</string>
 
     <string name="setting_notification_permission_rejected_dialog_title">Notifications permission denied</string>
-    <string name="setting_notification_permission_rejected_dialog_description">To receive your premium daily and monthly reminders, you need to allow notifications. Do you want to receive notifications?</string>
-    <string name="setting_notification_permission_rejected_dialog_accept_cta">Allow</string>
+    <string name="setting_notification_permission_rejected_dialog_description">To receive your premium daily and monthly reminders, you need to allow notifications. Do you want to receive notifications?</string>    <string name="setting_notification_permission_rejected_dialog_accept_cta">Allow</string>
     <string name="setting_notification_permission_rejected_dialog_not_now_cta">Not now</string>
     <string name="settings_error_loading_title">Unable to load settings</string>
     <string name="settings_error_loading_description">An error occurred while loading settings. Please try again.\n(%s)</string>
+      <!-- Firebase Authentication Test -->
+    <string name="signed_in_fmt">Signed in as: %1$s (%2$s)</string>
+    <string name="signed_out">Signed out</string>
+    <string name="firebase_auth_test_short">Auth Test</string>
+    <string name="firebase_auth_test_long">Firebase Authentication Test</string>
 </resources>
 
