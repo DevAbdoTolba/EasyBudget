@@ -110,9 +110,27 @@ private const val SHOULD_RESET_INIT_DATE = "should_reset_init_date"
  */
 private const val SHOULD_SHOW_CHECKED_BALANCE = "should_show_checked_balance"
 /**
+ * Three-day rolling budget limit amount (double stored as long)
+ */
+private const val THREE_DAY_ROLLING_BUDGET_LIMIT_KEY = "three_day_rolling_budget_limit"
+/**
+ * Three-day rolling budget feature enabled (boolean)
+ */
+private const val THREE_DAY_ROLLING_BUDGET_ENABLED_KEY = "three_day_rolling_budget_enabled"
+/**
  * Id of the last selected online account
  */
 private const val SELECTED_ACCOUNT_ID_KEY = "selectedAccountId"
+
+/**
+ * Three-day rolling budget limit amount (double)
+ */
+private const val THREE_DAY_ROLLING_BUDGET_LIMIT_KEY = "three_day_rolling_budget_limit"
+
+/**
+ * Three-day rolling budget feature enabled (boolean)
+ */
+private const val THREE_DAY_ROLLING_BUDGET_ENABLED_KEY = "three_day_rolling_budget_enabled"
 
 fun Parameters.getInitDate(): LocalDate? {
     val timestamp = getLong(INIT_TIMESTAMP_PARAMETERS_KEY, 0L)
@@ -579,4 +597,50 @@ fun Parameters.getBackupManuallyRescheduledAt(): Date? {
 
 fun Parameters.setBackupManuallyRescheduledAt(date: Date) {
     putLong(BACKUP_MANUALLY_RESCHEDULED_AT_PARAMETERS_KEY, date.time)
+}
+
+private lateinit var threeDayRollingBudgetEnabledFlow: MutableStateFlow<Boolean>
+private lateinit var threeDayRollingBudgetLimitFlow: MutableStateFlow<Double>
+
+fun Parameters.watchThreeDayRollingBudgetEnabled(): StateFlow<Boolean> {
+    if (!::threeDayRollingBudgetEnabledFlow.isInitialized) {
+        threeDayRollingBudgetEnabledFlow = MutableStateFlow(isThreeDayRollingBudgetEnabled())
+    }
+
+    return threeDayRollingBudgetEnabledFlow
+}
+
+fun Parameters.watchThreeDayRollingBudgetLimit(): StateFlow<Double> {
+    if (!::threeDayRollingBudgetLimitFlow.isInitialized) {
+        threeDayRollingBudgetLimitFlow = MutableStateFlow(getThreeDayRollingBudgetLimit())
+    }
+
+    return threeDayRollingBudgetLimitFlow
+}
+
+fun Parameters.isThreeDayRollingBudgetEnabled(): Boolean {
+    return getBoolean(THREE_DAY_ROLLING_BUDGET_ENABLED_KEY, false)
+}
+
+fun Parameters.setThreeDayRollingBudgetEnabled(enabled: Boolean) {
+    putBoolean(THREE_DAY_ROLLING_BUDGET_ENABLED_KEY, enabled)
+    
+    if (::threeDayRollingBudgetEnabledFlow.isInitialized) {
+        threeDayRollingBudgetEnabledFlow.value = enabled
+    }
+}
+
+fun Parameters.getThreeDayRollingBudgetLimit(): Double {
+    val budgetLimitAsLong = getLong(THREE_DAY_ROLLING_BUDGET_LIMIT_KEY, 10000) // Default 100 as a double
+    return budgetLimitAsLong.toDouble() / 100.0 // Convert from long storage format
+}
+
+fun Parameters.setThreeDayRollingBudgetLimit(limit: Double) {
+    // Convert to long for storage (multiply by 100 to preserve cents)
+    val budgetLimitAsLong = (limit * 100).toLong()
+    putLong(THREE_DAY_ROLLING_BUDGET_LIMIT_KEY, budgetLimitAsLong)
+    
+    if (::threeDayRollingBudgetLimitFlow.isInitialized) {
+        threeDayRollingBudgetLimitFlow.value = limit
+    }
 }

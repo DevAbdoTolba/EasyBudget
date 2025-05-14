@@ -86,14 +86,14 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-    signingConfigs {
-        getByName("debug") {
-            storeFile = file("../key/debug.jks")
-            storePassword = "uFdRPMWz69R28t6m9zV53jmw9hJVK3"
-            keyAlias = "easybudget"
-            keyPassword = "uFdRPMWz69R28t6m9zV53jmw9hJVK3"
-        }
-    }
+    // signingConfigs {
+    //     getByName("debug") {
+    //         storeFile = file("../key/debug.jks")
+    //         storePassword = "uFdRPMWz69R28t6m9zV53jmw9hJVK3"
+    //         keyAlias = "easybudget"
+    //         keyPassword = "uFdRPMWz69R28t6m9zV53jmw9hJVK3"
+    //     }
+    // }
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

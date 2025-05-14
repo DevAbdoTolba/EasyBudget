@@ -204,6 +204,27 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun onThreeDayRollingBudgetEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            parameters.setThreeDayRollingBudgetEnabled(enabled)
+        }
+    }
+
+    fun onThreeDayRollingBudgetLimitChanged(limit: Double) {
+        viewModelScope.launch {
+            parameters.setThreeDayRollingBudgetLimit(limit)
+        }
+    }
+    
+    fun onAdjustThreeDayRollingBudgetClicked() {
+        viewModelScope.launch {
+            val subscriptionStatus = (stateFlow.value as State.Loaded).subscriptionStatus
+            if (subscriptionStatus is SubscriptionStatus.Subscribed) {
+                eventMutableFlow.emit(Event.ShowThreeDayRollingBudgetLimitPicker(subscriptionStatus.threeDayRollingBudgetLimit))
+            }
+        }
+    }
+
     fun onCloudBackupClicked() {
         viewModelScope.launch {
             eventMutableFlow.emit(Event.OpenBackupSettings)
@@ -333,7 +354,7 @@ class SettingsViewModel @Inject constructor(
             val dailyReminderActivated: Boolean
             val monthlyReportNotificationActivated: Boolean
             val threeDayRollingBudgetEnabled: Boolean
-            val threeDayRollingBudgetLimit: Int
+            val threeDayRollingBudgetLimit: Double
         }
 
         data object Loading : SubscriptionStatus()
@@ -346,7 +367,7 @@ class SettingsViewModel @Inject constructor(
             override val dailyReminderActivated: Boolean,
             override val monthlyReportNotificationActivated: Boolean,
             override val threeDayRollingBudgetEnabled: Boolean,
-            override val threeDayRollingBudgetLimit: Int
+            override val threeDayRollingBudgetLimit: Double
         ) : SubscriptionStatus(), Subscribed
         data class PremiumSubscribed(
             override val cloudBackupEnabled: Boolean,
@@ -355,7 +376,7 @@ class SettingsViewModel @Inject constructor(
             override val dailyReminderActivated: Boolean,
             override val monthlyReportNotificationActivated: Boolean,
             override val threeDayRollingBudgetEnabled: Boolean,
-            override val threeDayRollingBudgetLimit: Int
+            override val threeDayRollingBudgetLimit: Double
         ) : SubscriptionStatus(), Subscribed
     }
 
@@ -363,6 +384,7 @@ class SettingsViewModel @Inject constructor(
         data object OpenBackupSettings : Event()
         data object ShowCurrencyPicker : Event()
         data class ShowLowMoneyWarningAmountPicker(val currentLowMoneyWarningAmount: Int) : Event()
+        data class ShowThreeDayRollingBudgetLimitPicker(val currentBudgetLimit: Double) : Event()
         data object OpenSubscribeScreen : Event()
         data class ShowThemePicker(val currentTheme: AppTheme) : Event()
         data object AskForNotificationPermission : Event()

@@ -73,8 +73,7 @@ fun SettingsView(
         onRetryButtonClicked = viewModel::onRetryButtonPressed,
         onCurrencyChangeClicked = viewModel::onCurrencyChangeClicked,
         onAdjustLowMoneyWarningAmountClicked = viewModel::onAdjustLowMoneyWarningAmountClicked,
-        onFirstDayOfWeekChanged = viewModel::onFirstDayOfWeekChanged,
-        onPremiumButtonClicked = viewModel::onPremiumButtonClicked,
+        onFirstDayOfWeekChanged = viewModel::onFirstDayOfWeekChanged,        onPremiumButtonClicked = viewModel::onPremiumButtonClicked,
         onProButtonClicked = viewModel::onProButtonClicked,
         onThemeClicked = viewModel::onThemeClicked,
         onShowCheckedBalanceChanged = viewModel::onShowCheckedBalanceChanged,
@@ -93,6 +92,9 @@ fun SettingsView(
         navigateToPremium = navigateToPremium,
         onThemeSelected = viewModel::onThemeSelected,
         onNotificationPermissionDeniedPromptAccepted = viewModel::onNotificationPermissionDeniedPromptAccepted,
+        onThreeDayRollingBudgetEnabledChanged = viewModel::onThreeDayRollingBudgetEnabledChanged,
+        onAdjustThreeDayRollingBudgetClicked = viewModel::onAdjustThreeDayRollingBudgetClicked,
+        onThreeDayRollingBudgetLimitChanged = viewModel::onThreeDayRollingBudgetLimitChanged,
     )
 }
 
@@ -126,6 +128,9 @@ private fun SettingsView(
     navigateToPremium: () -> Unit,
     onThemeSelected: (AppTheme) -> Unit,
     onNotificationPermissionDeniedPromptAccepted: () -> Unit,
+    onThreeDayRollingBudgetEnabledChanged: (Boolean) -> Unit = {},
+    onAdjustThreeDayRollingBudgetClicked: () -> Unit = {},
+    onThreeDayRollingBudgetLimitChanged: (Double) -> Unit = {},
 ) {
     val context = LocalContext.current
     val pushPermissionState = rememberPermissionStateCompat {
@@ -139,11 +144,16 @@ private fun SettingsView(
         launchCollect(eventFlow) { event ->
             when(event) {
                 SettingsViewModel.Event.OpenBackupSettings -> navigateToBackupSettings()
-                SettingsViewModel.Event.ShowCurrencyPicker -> showCurrencyPickerDialog = true
-                is SettingsViewModel.Event.ShowLowMoneyWarningAmountPicker -> {
+                SettingsViewModel.Event.ShowCurrencyPicker -> showCurrencyPickerDialog = true                is SettingsViewModel.Event.ShowLowMoneyWarningAmountPicker -> {
                     context.showLowMoneyWarningAmountPickerDialog(
                         lowMoneyWarningAmount = event.currentLowMoneyWarningAmount,
                         onLowMoneyWarningAmountChanged = onAdjustLowMoneyWarningAmountChanged,
+                    )
+                }
+                is SettingsViewModel.Event.ShowThreeDayRollingBudgetLimitPicker -> {
+                    context.showThreeDayRollingBudgetPickerDialog(
+                        currentBudgetLimit = event.currentBudgetLimit,
+                        onBudgetLimitChanged = onThreeDayRollingBudgetLimitChanged,
                     )
                 }
                 SettingsViewModel.Event.AskForNotificationPermission -> {

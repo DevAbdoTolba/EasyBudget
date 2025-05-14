@@ -28,6 +28,7 @@ import com.benoitletondor.easybudgetapp.compose.components.LoadingView
 import com.benoitletondor.easybudgetapp.model.DataForMonth
 import com.benoitletondor.easybudgetapp.model.Expense
 import com.benoitletondor.easybudgetapp.view.main.MainViewModel
+import com.benoitletondor.easybudgetapp.view.main.ThreeDayBudgetState
 import com.benoitletondor.easybudgetapp.view.main.subviews.calendar.CalendarView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,6 +50,7 @@ fun MainViewContent(
     getDataForMonth: suspend (YearMonth) -> DataForMonth,
     selectedDateFlow: StateFlow<LocalDate>,
     lowMoneyAmountWarningFlow: StateFlow<Int>,
+    threeDayBudgetStateFlow: StateFlow<ThreeDayBudgetState>,
     goBackToCurrentMonthEventFlow: Flow<Unit>,
     dayDataFlow: StateFlow<MainViewModel.SelectedDateExpensesData>,
     userCurrencyFlow: StateFlow<Currency>,
@@ -109,6 +111,12 @@ fun MainViewContent(
                             goBackToCurrentMonthEventFlow = goBackToCurrentMonthEventFlow,
                             onDateSelected = onDateClicked,
                             onDateLongClicked = onDateLongClicked,
+                        )                        Spacer(modifier = Modifier.height(2.dp))
+                        
+                        ThreeDayBudgetViewSection(
+                            threeDayBudgetStateFlow = threeDayBudgetStateFlow,
+                            userCurrencyFlow = userCurrencyFlow,
+                            onRetryButtonClicked = onRetryThreeDayBudgetDataLoadingButtonPressed,
                         )
 
                         Spacer(modifier = Modifier.height(2.dp))

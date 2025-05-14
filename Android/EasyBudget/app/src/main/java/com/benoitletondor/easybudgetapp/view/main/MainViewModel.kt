@@ -54,6 +54,10 @@ import com.benoitletondor.easybudgetapp.parameters.watchFirstDayOfWeek
 import com.benoitletondor.easybudgetapp.parameters.watchLowMoneyWarningAmount
 import com.benoitletondor.easybudgetapp.parameters.watchShouldShowCheckedBalance
 import com.benoitletondor.easybudgetapp.parameters.watchUserSawMonthlyReportHint
+import com.benoitletondor.easybudgetapp.parameters.isThreeDayRollingBudgetEnabled
+import com.benoitletondor.easybudgetapp.parameters.getThreeDayRollingBudgetLimit
+import com.benoitletondor.easybudgetapp.parameters.watchThreeDayRollingBudgetEnabled
+import com.benoitletondor.easybudgetapp.parameters.watchThreeDayRollingBudgetLimit
 import com.benoitletondor.easybudgetapp.view.onboarding.OnboardingResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -66,6 +70,8 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.YearMonth
 import javax.inject.Inject
+import com.benoitletondor.easybudgetapp.view.main.ThreeDayRollingBudgetState
+import com.benoitletondor.easybudgetapp.view.main.ThreeDayRollingBudgetStatus
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -135,6 +141,80 @@ class MainViewModel @Inject constructor(
     private val retryLoadingAccountsEventMutableFlow = MutableSharedFlow<Unit>()
     private val retryLoadingSelectedDateDataEventMutableFlow = MutableSharedFlow<Unit>()
     private val retryLoadingDBEventMutableFlow = MutableSharedFlow<Unit>()
+
+    private val retryLoadingThreeDayBudgetDataEventMutableFlow = MutableSharedFlow<Unit>()
+
+    val threeDayRollingBudgetStateFlow: StateFlow<ThreeDayRollingBudgetState> = combine(
+        parameters.watchThreeDayRollingBudgetEnabled(),
+        parameters.watchThreeDayRollingBudgetLimit(),
+        dbAvailableFlow,
+        retryLoadingThreeDayBudgetDataEventMutableFlow.onStart {
+            emit(Unit)
+        },
+    ) { isEnabled, budgetLimit, dbState, _ ->
+        if (!isEnabled) {
+            return@combine ThreeDayRollingBudgetState.Disabled
+        }
+        
+        when(dbState) {
+            is DBState.Loaded -> {
+                try {
+                    val today = LocalDate.now()
+                    val twoDaysAgo = today.minusDays(2)
+                    val expenses = withContext(Dispatchers.Default) {
+                        // Get expenses for the last 3 days (including today)
+                        val threeDaysExpenses = mutableListOf<Expense>()
+                        for (i in 0..2) {
+                            val date = today.minusDays(i.toLong())
+                            threeDaysExpenses.addAll(dbState.db.getExpensesForDay(date))
+                        }
+                        threeDaysExpenses
+                    }
+                    
+                    // Calculate total expense amount (only negative amounts - expenditures)
+                    val negativeExpenses = expenses.filter { it.amount < 0 }
+                    val totalNegativeAmount = negativeExpenses.sumOf { -it.amount } // Convert to positive value for easier comparison
+                    
+                    // Calculate percentage of budget used
+                    val percentUsed = (totalNegativeAmount / budgetLimit).toFloat().coerceIn(0f, 1f)
+                    
+                    val status = ThreeDayRollingBudgetStatus(
+                        enabled = true,
+                        limit = budgetLimit,
+                        totalExpenseAmount = totalNegativeAmount,
+                        percentUsed = percentUsed,
+                        expenses = negativeExpenses,
+                        dateRange = Pair(twoDaysAgo, today)
+                    )
+                    
+                    ThreeDayRollingBudgetState.Available(status)
+                } catch (e: Exception) {
+                    if (e is CancellationException) throw e
+                    Logger.error("Error calculating 3-day rolling budget data", e)
+                    ThreeDayRollingBudgetState.Error(e)
+                }
+            }
+            DBState.Loading,
+            DBState.NotLoaded -> ThreeDayRollingBudgetState.Loading
+            is DBState.Error -> ThreeDayRollingBudgetState.Error(dbState.error)
+        }
+    }
+    .retryWhen { e, _ ->
+        Logger.error("Error while getting 3-day rolling budget data", e)
+        emit(ThreeDayRollingBudgetState.Error(e))
+
+        retryLoadingThreeDayBudgetDataEventMutableFlow.first()
+        emit(ThreeDayRollingBudgetState.Loading)
+
+        true
+    }
+    .stateIn(viewModelScope, SharingStarted.Eagerly, ThreeDayRollingBudgetState.Loading)
+
+    fun onRetryThreeDayBudgetDataLoadingButtonPressed() {
+        viewModelScope.launch {
+            retryLoadingThreeDayBudgetDataEventMutableFlow.emit(Unit)
+        }
+    }
 
     val includeCheckedBalanceFlow = iab.iabStatusFlow
         .mapNotNull { when(it) {
@@ -942,4 +1022,20 @@ class MainViewModel @Inject constructor(
         }
         class Error(val error: Throwable) : DBState()
     }
+
+    sealed class ThreeDayRollingBudgetState {
+        data object Disabled : ThreeDayRollingBudgetState()
+        data object Loading : ThreeDayRollingBudgetState()
+        data class Error(val error: Throwable) : ThreeDayRollingBudgetState()
+        data class Available(val status: ThreeDayRollingBudgetStatus) : ThreeDayRollingBudgetState()
+    }
+
+    data class ThreeDayRollingBudgetStatus(
+        val enabled: Boolean,
+        val limit: Double,
+        val totalExpenseAmount: Double,
+        val percentUsed: Float,
+        val expenses: List<Expense>,
+        val dateRange: Pair<LocalDate, LocalDate>
+    )
 }

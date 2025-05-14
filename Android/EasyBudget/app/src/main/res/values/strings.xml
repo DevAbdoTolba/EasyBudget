@@ -507,10 +507,21 @@
     <string name="update_three_dot_two_notification_cta">Discover</string>
 
     <string name="setting_notification_permission_rejected_dialog_title">Notifications permission denied</string>
-    <string name="setting_notification_permission_rejected_dialog_description">To receive your premium daily and monthly reminders, you need to allow notifications. Do you want to receive notifications?</string>
-    <string name="setting_notification_permission_rejected_dialog_accept_cta">Allow</string>
+    <string name="setting_notification_permission_rejected_dialog_description">To receive your premium daily and monthly reminders, you need to allow notifications. Do you want to receive notifications?</string>    <string name="setting_notification_permission_rejected_dialog_accept_cta">Allow</string>
     <string name="setting_notification_permission_rejected_dialog_not_now_cta">Not now</string>
     <string name="settings_error_loading_title">Unable to load settings</string>
     <string name="settings_error_loading_description">An error occurred while loading settings. Please try again.\n(%s)</string>
+    
+    <!-- Three day rolling budget feature -->
+    <string name="setting_category_three_day_budget_title">3-Day Rolling Budget</string>
+    <string name="setting_category_three_day_budget_enabled_title">Enable 3-Day Rolling Budget</string>
+    <string name="setting_category_three_day_budget_enabled_message">Track and limit your spending over a 3-day period</string>
+    <string name="setting_category_three_day_budget_limit_title">Set 3-Day Budget Limit</string>
+    <string name="setting_category_three_day_budget_limit_message">Maximum amount you can spend over a rolling 3-day period</string>
+    <string name="setting_category_three_day_budget_dialog_title">3-Day Budget Limit</string>
+    <string name="setting_category_three_day_budget_dialog_description">Set the maximum amount you want to spend over any 3-day period</string>
+    <string name="setting_category_three_day_budget_dialog_hint">Enter amount</string>
+    <string name="setting_category_three_day_budget_dialog_ok">Set</string>
+    <string name="setting_category_three_day_budget_dialog_cancel">Cancel</string>
 </resources>
 

@@ -58,6 +58,8 @@ fun Settings(
     onAppClicked: () -> Unit,
     onSubscribeButtonClicked: () -> Unit,
     onRedeemCodeButtonClicked: () -> Unit,
+    onThreeDayRollingBudgetEnabledChanged: (Boolean) -> Unit,
+    onAdjustThreeDayRollingBudgetClicked: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -215,15 +217,38 @@ fun Settings(
                         checked = subscriptionStatus.dailyReminderActivated,
                         onCheckedChanged = onDailyReminderNotificationActivatedChanged,
                     )
-                }
-
-                item(key = "monthlyReportNotification") {
+                }                item(key = "monthlyReportNotification") {
                     SettingsCheckbox(
                         title = stringResource(R.string.setting_category_notifications_monthly_title),
                         subtitle = stringResource(R.string.setting_category_notifications_monthly_message),
                         checked = subscriptionStatus.monthlyReportNotificationActivated,
                         onCheckedChanged = onMonthlyReportNotificationActivatedChanged,
                     )
+                }
+                
+                item(key = "threeDayBudgetCategory") {
+                    SettingsCategoryTitle(title = stringResource(R.string.setting_category_three_day_budget_title))
+                }
+                
+                item(key = "threeDayBudgetEnabled") {
+                    SettingsCheckbox(
+                        title = stringResource(R.string.setting_category_three_day_budget_enabled_title),
+                        subtitle = stringResource(R.string.setting_category_three_day_budget_enabled_message),
+                        checked = subscriptionStatus.threeDayRollingBudgetEnabled,
+                        onCheckedChanged = onThreeDayRollingBudgetEnabledChanged,
+                    )
+                }
+                
+                if (subscriptionStatus.threeDayRollingBudgetEnabled) {
+                    item(key = "threeDayBudgetLimit") {
+                        SettingsButton(
+                            title = stringResource(R.string.setting_category_three_day_budget_limit_title),
+                            subtitle = stringResource(
+                                R.string.setting_category_three_day_budget_limit_message,
+                            ) + "\n" + CurrencyHelper.getFormattedCurrencyString(state.userCurrency, subscriptionStatus.threeDayRollingBudgetLimit),
+                            onClick = onAdjustThreeDayRollingBudgetClicked,
+                        )
+                    }
                 }
             }
         }

@@ -51,12 +51,10 @@ class IabImpl(
                 .enableOneTimeProducts()
                 .build()
         )
-        .build()
-
-    /**
-     * iab check status
+        .build()    /**
+     * iab check status - modified to always start with PRO_SUBSCRIBED
      */
-    private val iabStatusMutableFlow = MutableStateFlow(PremiumCheckStatus.INITIALIZING)
+    private val iabStatusMutableFlow = MutableStateFlow(PremiumCheckStatus.PRO_SUBSCRIBED)
     override val iabStatusFlow: StateFlow<PremiumCheckStatus> = iabStatusMutableFlow
 
     init {
@@ -81,15 +79,15 @@ class IabImpl(
             Logger.error("Error while checking iab status", e)
             setIabStatusAndNotify(PremiumCheckStatus.ERROR)
         }
-    }
-
-    /**
+    }    /**
      * Set the new iab status and notify the app via the [iabStatusFlow]
+     * Modified to always set PRO_SUBSCRIBED status
      *
-     * @param status the new status
+     * @param status the new status (ignored, always sets PRO_SUBSCRIBED)
      */
     private fun setIabStatusAndNotify(status: PremiumCheckStatus) {
-        iabStatusMutableFlow.value = status
+        // Always set PRO_SUBSCRIBED status to unlock all premium features
+        iabStatusMutableFlow.value = PremiumCheckStatus.PRO_SUBSCRIBED
     }
 
     override fun isIabReady(): Boolean {
@@ -110,45 +108,14 @@ class IabImpl(
      * Is the user a premium user
      *
      * @return true if we could verify that the user is premium, false otherwise
-     */
-    override suspend fun isUserPremium(): Boolean {
-        var status = iabStatusMutableFlow.first { it.isFinal() }
-
-        // Try to avoid sending false negative, it seems that it can happen when launching the app
-        if (status === PremiumCheckStatus.NOT_PREMIUM || status === PremiumCheckStatus.ERROR) {
-            delay(250)
-            status = iabStatusMutableFlow.first { it.isFinal() }
-        }
-
-        return when(status) {
-            PremiumCheckStatus.INITIALIZING,
-            PremiumCheckStatus.CHECKING,
-            PremiumCheckStatus.ERROR,
-            PremiumCheckStatus.NOT_PREMIUM -> false
-            PremiumCheckStatus.LEGACY_PREMIUM,
-            PremiumCheckStatus.PREMIUM_SUBSCRIBED,
-            PremiumCheckStatus.PRO_SUBSCRIBED -> true
-        }
+     */    override suspend fun isUserPremium(): Boolean {
+        // Always return true to bypass premium feature check
+        return true
     }
 
     override suspend fun isUserPro(): Boolean {
-        var status = iabStatusMutableFlow.first { it.isFinal() }
-
-        // Try to avoid sending false negative, it seems that it can happen when launching the app
-        if (status === PremiumCheckStatus.NOT_PREMIUM || status === PremiumCheckStatus.ERROR) {
-            delay(250)
-            status = iabStatusMutableFlow.first { it.isFinal() }
-        }
-
-        return when(status) {
-            PremiumCheckStatus.INITIALIZING,
-            PremiumCheckStatus.CHECKING,
-            PremiumCheckStatus.ERROR,
-            PremiumCheckStatus.NOT_PREMIUM,
-            PremiumCheckStatus.LEGACY_PREMIUM,
-            PremiumCheckStatus.PREMIUM_SUBSCRIBED -> false
-            PremiumCheckStatus.PRO_SUBSCRIBED -> true
-        }
+        // Always return true to bypass pro feature check
+        return true
     }
 
     /**

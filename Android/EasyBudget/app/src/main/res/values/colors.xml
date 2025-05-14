@@ -72,9 +72,20 @@
     <color name="expense_edit_field_accent_color_dark">@color/white</color>
     <color name="expense_edit_field_text_color_dark">@color/white</color>
     <color name="expense_edit_title_text_color_dark">@color/white</color>
-    <color name="expense_edit_title_text_color">@color/primary_text</color>
-    <color name="monthly_report_categories_title">@color/primary_text</color>
+    <color name="expense_edit_title_text_color">@color/primary_text</color>    <color name="monthly_report_categories_title">@color/primary_text</color>
     <color name="monthly_report_categories_value">@color/accent</color>
     <color name="monthly_report_date_color">@color/primary</color>
     <color name="add_expense_expense_thumb_background_color">#DDDDDD</color>
+    
+    <!-- 3-Day Rolling Budget colors -->
+    <color name="budget_normal_background">#E3F2FD</color>
+    <color name="budget_normal_text">@color/primary_text</color>
+    <color name="budget_normal_progress">@color/easy_budget_green</color>
+    <color name="budget_approaching_limit_background">#FFF8E1</color>
+    <color name="budget_approaching_limit_text">#F57F17</color>
+    <color name="budget_approaching_limit_progress">#FFA000</color>
+    <color name="budget_over_limit_background">#FFEBEE</color>
+    <color name="budget_over_limit_text">#D32F2F</color>
+    <color name="budget_over_limit_progress">#D32F2F</color>
+    <color name="budget_progress_track">#DDDDDD</color>
 </resources>
