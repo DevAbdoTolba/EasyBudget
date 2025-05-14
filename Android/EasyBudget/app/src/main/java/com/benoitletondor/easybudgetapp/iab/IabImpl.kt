@@ -60,11 +60,17 @@ class IabImpl(
     override val iabStatusFlow: StateFlow<PremiumCheckStatus> = iabStatusMutableFlow
 
     init {
-        startBillingClient()
+        // Set user as PRO by default
+        setIabStatusAndNotify(PremiumCheckStatus.PRO_SUBSCRIBED)
     }
 
     private fun startBillingClient() {
         try {
+            // Skip the actual billing check and just set as PRO
+            setIabStatusAndNotify(PremiumCheckStatus.PRO_SUBSCRIBED)
+            return
+            
+            // Original code below, never executed
             setIabStatusAndNotify(PremiumCheckStatus.INITIALIZING)
 
             billingClient.startConnection(this)
@@ -79,7 +85,7 @@ class IabImpl(
             }
         } catch (e: Exception) {
             Logger.error("Error while checking iab status", e)
-            setIabStatusAndNotify(PremiumCheckStatus.ERROR)
+            setIabStatusAndNotify(PremiumCheckStatus.PRO_SUBSCRIBED) // Always set to PRO even on error
         }
     }
 
@@ -112,43 +118,13 @@ class IabImpl(
      * @return true if we could verify that the user is premium, false otherwise
      */
     override suspend fun isUserPremium(): Boolean {
-        var status = iabStatusMutableFlow.first { it.isFinal() }
-
-        // Try to avoid sending false negative, it seems that it can happen when launching the app
-        if (status === PremiumCheckStatus.NOT_PREMIUM || status === PremiumCheckStatus.ERROR) {
-            delay(250)
-            status = iabStatusMutableFlow.first { it.isFinal() }
-        }
-
-        return when(status) {
-            PremiumCheckStatus.INITIALIZING,
-            PremiumCheckStatus.CHECKING,
-            PremiumCheckStatus.ERROR,
-            PremiumCheckStatus.NOT_PREMIUM -> false
-            PremiumCheckStatus.LEGACY_PREMIUM,
-            PremiumCheckStatus.PREMIUM_SUBSCRIBED,
-            PremiumCheckStatus.PRO_SUBSCRIBED -> true
-        }
+        // Always return true - this makes all premium features accessible
+        return true
     }
 
     override suspend fun isUserPro(): Boolean {
-        var status = iabStatusMutableFlow.first { it.isFinal() }
-
-        // Try to avoid sending false negative, it seems that it can happen when launching the app
-        if (status === PremiumCheckStatus.NOT_PREMIUM || status === PremiumCheckStatus.ERROR) {
-            delay(250)
-            status = iabStatusMutableFlow.first { it.isFinal() }
-        }
-
-        return when(status) {
-            PremiumCheckStatus.INITIALIZING,
-            PremiumCheckStatus.CHECKING,
-            PremiumCheckStatus.ERROR,
-            PremiumCheckStatus.NOT_PREMIUM,
-            PremiumCheckStatus.LEGACY_PREMIUM,
-            PremiumCheckStatus.PREMIUM_SUBSCRIBED -> false
-            PremiumCheckStatus.PRO_SUBSCRIBED -> true
-        }
+        // Always return true - this makes all pro features accessible
+        return true
     }
 
     /**
@@ -511,6 +487,10 @@ class IabImpl(
     }
 
     private fun checkPurchases() {
+        // Skip the actual purchase check and just set as PRO
+        setIabStatusAndNotify(PremiumCheckStatus.PRO_SUBSCRIBED)
+        
+        // Original code below, never executed
         setIabStatusAndNotify(PremiumCheckStatus.CHECKING)
         queryPurchases()
 
